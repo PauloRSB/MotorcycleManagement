@@ -1,0 +1,14 @@
+﻿syntax = "proto3";
+
+package auth;
+
+option csharp_namespace = "Challenge.Common.Messaging.Grpc";
+
+message DisableUserRequest {
+  string email = 1;
+}
+
+message DisableUserResponse {
+  bool success = 1;
+  string errorMessage = 2;
+}

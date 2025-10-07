@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # API Gateway - only for development
+  gateway:
+    build:
+      context: ./Gateways/Challenge.Gateways.ApiGateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DOTNET_RUNNING_IN_CONTAINER: true
+    ports:
+      - "5000:8080"
+    depends_on:
+      - rider
+    networks:
+      - rider_network
+
+  # Rider API - development configuration
+  rider:
+    build:
+      context: ./Microservices/Challenge.Microservices.RiderApi
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+    ports:
+      - "5001:8080"
+    depends_on:
+      - rider-database
+      - rider-storage
+    networks:
+      - rider_network
+      - rider_database_network
+
+  # MongoDB - development database
+  rider-database:
+    image: mongo:latest
+    container_name: rider-database
+    ports:
+      - "27017:27017"
+    volumes:
+      - rider-db-data:/data/db
+    networks:
+      - rider_database_network
+
+  # MinIO - local S3 storage
+  rider-storage:
+    image: minio/minio:latest
+    container_name: rider-storage
+    ports:
+      - "9000:9000"
+      - "9002:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - rider_network
+
+  # MinIO setup - creates bucket automatically
+  rider-storage-setup:
+    image: minio/mc:latest
+    container_name: rider-storage-setup
+    depends_on:
+      rider-storage:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      echo 'Setting up MinIO...';
+      /usr/bin/mc alias set myminio http://rider-storage:9000 minioadmin minioadmin;
+      echo 'Creating bucket rider-bucket...';
+      /usr/bin/mc mb myminio/rider-bucket --ignore-existing;
+      echo 'Setting public download policy...';
+      /usr/bin/mc anonymous set download myminio/rider-bucket;
+      echo 'MinIO setup completed successfully!';
+      exit 0;
+      "
+    networks:
+      - rider_network
+
+networks:
+  rider_network:
+    driver: bridge
+  rider_database_network:
+    driver: bridge
+
+volumes:
+  rider-db-data:
+    driver: local
+  minio-data:
+    driver: local

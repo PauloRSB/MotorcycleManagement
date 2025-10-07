@@ -1,0 +1,21 @@
+﻿syntax = "proto3";
+
+package auth;
+
+option csharp_namespace = "Challenge.Common.Messaging.Grpc";
+
+message CreateGroupRequest {
+  string groupName = 1;
+  string description = 2;
+}
+
+message CreateGroupResult {
+  string userPoolId = 1;
+  string groupName = 2;
+}
+
+message CreateGroupResponse {
+  CreateGroupResult result = 1;
+  bool success = 2;
+  string errorMessage = 3;
+}
