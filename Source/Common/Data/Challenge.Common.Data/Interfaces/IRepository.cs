@@ -12,7 +12,7 @@ namespace Challenge.Common.Data.Interfaces
         /// Retrieves all entities from the repository
         /// </summary>
         /// <returns>Collection of all entities</returns>
-        Task<IEnumerable<T>> GetAllAsync();
+        IEnumerable<T> GetAll();
 
         /// <summary>
         /// Updates an existing entity

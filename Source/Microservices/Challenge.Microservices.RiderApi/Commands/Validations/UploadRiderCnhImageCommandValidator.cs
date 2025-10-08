@@ -10,8 +10,8 @@ namespace Challenge.Microservices.RiderApi.Commands.Validations
 
         public UploadRiderCnhImageCommandValidator()
         {
-            RuleFor(x => x.RiderId)
-                .NotEmpty().WithMessage("Rider Id is required.");
+            RuleFor(x => x.Identifier)
+                .NotEmpty().WithMessage("Identifier is required.");
 
             RuleFor(x => x.CnhImage)
                 .NotEmpty().WithMessage("The CNH image is required for upload.")

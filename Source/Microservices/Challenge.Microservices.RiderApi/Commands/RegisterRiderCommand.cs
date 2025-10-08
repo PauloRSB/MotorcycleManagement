@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Challenge.Common.Core.Cqrs.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace Challenge.Microservices.RiderApi.Commands
 {
@@ -7,6 +8,12 @@ namespace Challenge.Microservices.RiderApi.Commands
     /// </summary>
     public class RegisterRiderCommand : ICommand
     {
+        /// <summary>
+        /// Unique identifier for the rider
+        /// </summary>
+        [JsonPropertyName("identificador")]
+        public string? Identifier { get; set; }
+
         /// <summary>
         /// The full name of the rider
         /// </summary>

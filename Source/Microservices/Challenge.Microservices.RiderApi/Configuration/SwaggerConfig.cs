@@ -1,5 +1,4 @@
 ﻿using Microsoft.OpenApi.Models;
-using MongoDB.Bson;
 using System.Reflection;
 
 namespace Challenge.Microservices.RiderApi.Configuration

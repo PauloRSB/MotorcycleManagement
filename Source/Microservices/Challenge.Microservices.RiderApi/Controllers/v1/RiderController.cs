@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Challenge.Common.Core.Response.Models;
 using Challenge.Microservices.RiderApi.Commands;
 using Challenge.Common.Core.Response.Factories;
-using Challenge.Microservices.RiderApi.Commands.Handlers;
 using Challenge.Microservices.RiderApi.Infra.Data.Entities;
+using Challenge.Common.Core.Cqrs.Interfaces;
 
 namespace Challenge.Microservices.RiderApi.Controllers.v1
 {
@@ -112,7 +112,7 @@ namespace Challenge.Microservices.RiderApi.Controllers.v1
                     ResponseFactory.CreateBadRequestResponse(errors));
             }
 
-            command.RiderId = id;
+            command.Identifier = id;
 
             var response = await commandHandler.Handle(command);
 

@@ -8,6 +8,11 @@ namespace Challenge.Microservices.RiderApi.Infra.Data.Entities
     public class Rider : BaseEntity
     {
         /// <summary>
+        /// Gets or sets the unique identifier (business key)
+        /// </summary>
+        public required string Identifier { get; set; }
+
+        /// <summary>
         /// Gets or sets the full name of the rider
         /// </summary>
         public required string Name { get; set; }
@@ -40,6 +45,6 @@ namespace Challenge.Microservices.RiderApi.Infra.Data.Entities
         /// <summary>
         /// Gets or sets whether the rider is currently active in the system
         /// </summary>
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
     }
 }

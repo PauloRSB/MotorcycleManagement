@@ -5,6 +5,7 @@ using FluentValidation;
 using Challenge.Common.Core.Response.Factories;
 using Challenge.Microservices.RiderApi.Infra.Data.Entities;
 using Challenge.Microservices.RiderApi.Infra.Data.Repositories;
+using Challenge.Common.Core.Cqrs.Interfaces;
 
 namespace Challenge.Microservices.RiderApi.Commands.Handlers
 {
@@ -39,14 +40,12 @@ namespace Challenge.Microservices.RiderApi.Commands.Handlers
             try
             {
                 var rider = mapper.Map<Rider>(command);
-                rider.Active = true;
 
-                var riderId = await riderRepository.AddAsync(rider);
-                rider.Id = riderId;
+                await riderRepository.AddAsync(rider);
 
                 logger.LogInformation(
-                    "Rider registered successfully. RiderId: {RiderId}, Cnpj: {Cnpj}",
-                    riderId, rider.Cnpj);
+                    "Rider registered successfully. Identifier: {Identifier}, Cnpj: {Cnpj}",
+                    command.Identifier, rider.Cnpj);
 
                 return ResponseFactory.CreateCreatedResponse(rider);
             }

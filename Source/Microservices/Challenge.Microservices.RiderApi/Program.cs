@@ -1,6 +1,7 @@
 using Challenge.Common.Data.Mongo.Converters;
 using Challenge.Microservices.RiderApi.Configuration;
 using Challenge.Microservices.RiderApi.Configuration.Options;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Challenge.Microservices.RiderApi
 {
@@ -10,6 +11,14 @@ namespace Challenge.Microservices.RiderApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure Kestrel to support HTTP/1.1 and HTTP/2
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(8080, listenOptions =>
+                {
+                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                });
+            });
 
             builder.Services
                 .SetupDatabase(builder.Configuration)
@@ -38,6 +47,8 @@ namespace Challenge.Microservices.RiderApi
             var app = builder.Build();
 
             app.SetupSwagger();
+
+            app.MapGrpcServices();
 
             app.MapControllers();
 

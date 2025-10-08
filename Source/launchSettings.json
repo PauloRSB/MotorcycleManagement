@@ -8,7 +8,7 @@
       "serviceActions": {
         "gateway": "StartDebugging",
         "rider": "StartDebugging",
-        "rider-database": "StartWithoutDebugging"
+        "motorbike": "StartDebugging"
       }
     }
   }

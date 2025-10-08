@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # API Gateway - only for development
+  # API Gateway
   gateway:
     build:
       context: ./Gateways/Challenge.Gateways.ApiGateway
@@ -15,14 +15,17 @@ services:
       - "5000:8080"
     depends_on:
       - rider
+      - motorbike
+      - subscription
     networks:
-      - rider_network
+      - app_network
 
-  # Rider API - development configuration
+  # Rider API
   rider:
     build:
       context: ./Microservices/Challenge.Microservices.RiderApi
       dockerfile: Dockerfile
+    container_name: rider
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
@@ -32,10 +35,46 @@ services:
       - rider-database
       - rider-storage
     networks:
+      - app_network
       - rider_network
-      - rider_database_network
 
-  # MongoDB - development database
+  # Motorbike API
+  motorbike:
+    build:
+      context: ./Microservices/Challenge.Microservices.MotorbikeApi
+      dockerfile: Dockerfile
+    container_name: motorbike
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+    ports:
+      - "5002:8080"
+    depends_on:
+      - motorbike-database
+      - rabbitmq
+    networks:
+      - app_network
+      - motorbike_network
+
+  # Subscription API
+  subscription:
+    build:
+      context: ./Microservices/Challenge.Microservices.SubscriptionApi
+      dockerfile: Dockerfile
+    container_name: subscription
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+    ports:
+      - "5003:8080"
+    depends_on:
+      - subscription-database
+      - rider
+    networks:
+      - app_network
+      - subscription_network
+
+  # MongoDB for Rider
   rider-database:
     image: mongo:latest
     container_name: rider-database
@@ -44,15 +83,53 @@ services:
     volumes:
       - rider-db-data:/data/db
     networks:
-      - rider_database_network
+      - rider_network
 
-  # MinIO - local S3 storage
+  # MongoDB for Motorbike
+  motorbike-database:
+    image: mongo:latest
+    container_name: motorbike-database
+    ports:
+      - "27018:27017"
+    volumes:
+      - motorbike-db-data:/data/db
+    networks:
+      - motorbike_network
+
+  # MongoDB for Subscription
+  subscription-database:
+    image: mongo:latest
+    container_name: subscription-database
+    ports:
+      - "27019:27017"
+    volumes:
+      - subscription-db-data:/data/db
+    networks:
+      - subscription_network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app_network
+      - motorbike_network
+
+  # MinIO - S3 storage for Rider
   rider-storage:
     image: minio/minio:latest
     container_name: rider-storage
     ports:
       - "9000:9000"
-      - "9002:9001"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -67,7 +144,7 @@ services:
     networks:
       - rider_network
 
-  # MinIO setup - creates bucket automatically
+  # MinIO setup
   rider-storage-setup:
     image: minio/mc:latest
     container_name: rider-storage-setup
@@ -90,13 +167,23 @@ services:
       - rider_network
 
 networks:
+  app_network:
+    driver: bridge
   rider_network:
     driver: bridge
-  rider_database_network:
+  motorbike_network:
+    driver: bridge
+  subscription_network:
     driver: bridge
 
 volumes:
   rider-db-data:
+    driver: local
+  motorbike-db-data:
+    driver: local
+  subscription-db-data:
+    driver: local
+  rabbitmq-data:
     driver: local
   minio-data:
     driver: local

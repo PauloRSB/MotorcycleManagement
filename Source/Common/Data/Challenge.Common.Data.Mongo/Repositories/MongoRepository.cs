@@ -24,9 +24,9 @@ namespace Challenge.Common.Data.Mongo.Repositories
         /// Retrieves all entities from the collection
         /// </summary>
         /// <returns>Collection of all entities</returns>
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public IEnumerable<T> GetAll()
         {
-            return await _collection.Find(FilterDefinition<T>.Empty).ToListAsync();
+            return _collection.AsQueryable();
         }
 
         /// <summary>

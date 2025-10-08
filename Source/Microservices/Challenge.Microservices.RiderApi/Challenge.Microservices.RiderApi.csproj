@@ -21,6 +21,7 @@
 		<PackageReference Include="DocsBRValidator" />
 		<PackageReference Include="FluentValidation" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+		<PackageReference Include="Grpc.AspNetCore" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
 		<PackageReference Include="MongoDB.Bson" />
@@ -31,10 +32,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\Common\Core\Challenge.Common.Core.Cqrs\Challenge.Common.Core.Cqrs.csproj" />
 		<ProjectReference Include="..\..\Common\Core\Challenge.Common.Core.Response\Challenge.Common.Core.Response.csproj" />
 		<ProjectReference Include="..\..\Common\Core\Challenge.Common.Core.Validation\Challenge.Common.Core.Validation.csproj" />
 		<ProjectReference Include="..\..\Common\Data\Challenge.Common.Data.Mongo\Challenge.Common.Data.Mongo.csproj" />
 		<ProjectReference Include="..\..\Common\Data\Challenge.Common.Data\Challenge.Common.Data.csproj" />
+		<ProjectReference Include="..\..\Common\Messaging\Challenge.Common.Messaging.Grpc\Challenge.Common.Messaging.Grpc\Challenge.Common.Messaging.Grpc.csproj" />
 	</ItemGroup>
 
 </Project>

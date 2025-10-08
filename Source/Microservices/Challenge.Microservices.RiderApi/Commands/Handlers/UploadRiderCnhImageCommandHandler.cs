@@ -4,6 +4,7 @@ using Challenge.Common.Core.Validation.Extensions;
 using Challenge.Common.Core.Response.Factories;
 using Challenge.Microservices.RiderApi.Infra.Data.Repositories;
 using Challenge.Microservices.RiderApi.Infra.Services;
+using Challenge.Common.Core.Cqrs.Interfaces;
 
 namespace Challenge.Microservices.RiderApi.Commands.Handlers
 {
@@ -28,17 +29,17 @@ namespace Challenge.Microservices.RiderApi.Commands.Handlers
             if (!validationResult.IsValid)
             {
                 logger.LogWarning(
-                    "Validation failed for upload CNH image. RiderId: {RiderId}",
-                    command.RiderId);
+                    "Validation failed for upload CNH image. Identifier: {Identifier}",
+                    command.Identifier);
 
                 return ResponseFactory.CreateBadRequestResponse(
                     validationResult.ToErrorDictionary());
             }
 
-            var rider = await riderRepository.GetByIdAsync(command.RiderId);
+            var rider = await riderRepository.GetByIdentifierAsync(command.Identifier!);
             if (rider == null)
             {
-                logger.LogWarning("Rider not found. RiderId: {RiderId}", command.RiderId);
+                logger.LogWarning("Rider not found. Identifier: {Identifier}", command.Identifier);
                 return ResponseFactory.CreateNotFoundResponse();
             }
 
@@ -46,14 +47,14 @@ namespace Challenge.Microservices.RiderApi.Commands.Handlers
             {
                 var imageUrl = await s3Service.UploadCnhImageAsync(
                     command.CnhImage,
-                    rider.Id.ToString(),
+                    rider.Identifier,
                     rider.CnhNumber);
 
                 rider.CnhImageUrl = imageUrl;
                 await riderRepository.UpdateAsync(rider);
 
                 logger.LogInformation(
-                    "CNH image uploaded successfully. RiderId: {RiderId}, ImageUrl: {ImageUrl}",
+                    "CNH image uploaded successfully. Identifier: {Identifier}, ImageUrl: {ImageUrl}",
                     rider.Id, imageUrl);
 
                 return ResponseFactory.CreateCreatedResponse(rider);
@@ -61,8 +62,8 @@ namespace Challenge.Microservices.RiderApi.Commands.Handlers
             catch (Exception ex)
             {
                 logger.LogError(ex,
-                    "Error uploading CNH image. RiderId: {RiderId}",
-                    command.RiderId);
+                    "Error uploading CNH image. Identifier: {Identifier}",
+                    command.Identifier);
 
                 return ResponseFactory.CreateCriticalResponse(ex);
             }

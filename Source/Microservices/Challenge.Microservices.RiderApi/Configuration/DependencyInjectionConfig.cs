@@ -1,4 +1,5 @@
-﻿using Challenge.Microservices.RiderApi.AutoMapper;
+﻿using Challenge.Common.Core.Cqrs.Interfaces;
+using Challenge.Microservices.RiderApi.AutoMapper;
 using Challenge.Microservices.RiderApi.Commands;
 using Challenge.Microservices.RiderApi.Commands.Handlers;
 using Challenge.Microservices.RiderApi.Commands.Validations;
@@ -20,11 +21,13 @@ namespace Challenge.Microservices.RiderApi.Configuration
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection SetupDependencyInjection(this IServiceCollection services)
         {
-            services.SetupValidators();
-            services.SetupCommandHandlers();
-            services.SetupRepositories();
-            services.SetupServices();
-            services.SetupAutoMapper();
+            services
+                .SetupValidators()
+                .SetupCommandHandlers()
+                .SetupRepositories()
+                .SetupServices()
+                .SetupAutoMapper()
+                .SetupGrpc();
 
             return services;
         }
