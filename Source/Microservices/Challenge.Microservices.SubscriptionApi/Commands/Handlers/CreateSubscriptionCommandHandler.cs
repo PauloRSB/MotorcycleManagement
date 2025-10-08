@@ -31,12 +31,12 @@ namespace Challenge.Microservices.SubscriptionApi.Commands.Handlers
             }
 
             // Validate rider has category A license
-            var isValidRider = await riderValidationService.HasCategoryALicenseAsync(command.RiderIdentifier!);
-            if (!isValidRider)
+            var hasValidLicense = await riderValidationService.HasValidLicenseAsync(command.RiderIdentifier!);
+            if (!hasValidLicense.IsValid)
             {
                 var errors = ValidationExtensions.SingleError(
                     "RiderId",
-                    "Only riders with category 'A' or 'AB' license can rent motorbikes");
+                    hasValidLicense.Message);
                 return ResponseFactory.CreateBadRequestResponse(errors);
             }
 
@@ -49,6 +49,8 @@ namespace Challenge.Microservices.SubscriptionApi.Commands.Handlers
                     "Motorbike is already rented");
                 return ResponseFactory.CreateConflictResponse(errors);
             }
+
+            // TODO: Check motorbike exists on Motorbike API
 
             try
             {

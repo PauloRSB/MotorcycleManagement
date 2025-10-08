@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Challenge.Microservices.SubscriptionApi.Commands;
 using Challenge.Microservices.SubscriptionApi.Infra.Data.Entities;
+using Challenge.Microservices.SubscriptionApi.Queries.Responses;
 
 namespace Challenge.Microservices.SubscriptionApi.AutoMapper
 {
@@ -15,10 +16,13 @@ namespace Challenge.Microservices.SubscriptionApi.AutoMapper
         public MappingProfile()
         {
             CreateMap<CreateSubscriptionCommand, Subscription>()
-                .ForMember(dest => dest.DailyCost, opt => opt.MapFrom(src => RentalPlans.Plans[src.PlanDays]))
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
-                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.CreatedAt, o => o.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(d => d.UpdatedAt, o => o.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(d => d.Status, o => o.MapFrom(_ => SubscriptionStatus.Active))
+            .ForMember(d => d.DailyCost, o => o.MapFrom(src => RentalPlans.Plans[src.PlanDays]));
+
+            CreateMap<Subscription, SubscriptionResponse>();
         }
     }
 }

@@ -27,6 +27,7 @@ namespace Challenge.Common.Core.Response.Factories
                 CreatedResponse<T> created => CreateCreatedResponse(created, message),
                 CriticalResponse critical => CreateInternalServerErrorResponse(critical, message),
                 NotFoundResponse => CreateNotFoundResponse(),
+                NoContentResponse => CreateNoContentResponse(),
                 SuccessResponse<T> success => CreateOkResponse(success, message),
                 UnauthorizedResponse unauthorized => CreateUnauthorizedResponse(unauthorized, message),
                 _ => CreateInternalServerErrorResponse()
@@ -146,6 +147,15 @@ namespace Challenge.Common.Core.Response.Factories
         public static IActionResult CreateNotFoundResponse()
         {
             return new NotFoundResult();
+        }
+
+        /// <summary>
+        /// Creates a no content action result (204)
+        /// </summary>
+        /// <returns>A NotFoundResult</returns>
+        public static IActionResult CreateNoContentResponse()
+        {
+            return new NoContentResult();
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Challenge.Microservices.MotorbikeApi.Configuration
 
         private static IServiceCollection SetupValidators(this IServiceCollection services)
         {
+            services.AddScoped<IValidator<DeleteMotorbikeCommand>, DeleteMotorbikeCommandValidator>();
             services.AddScoped<IValidator<RegisterMotorbikeCommand>, RegisterMotorbikeCommandValidator>();
             services.AddScoped<IValidator<UpdateMotorbikeLicensePlateCommand>, UpdateMotorbikeLicensePlateCommandValidator>();
             services.AddScoped<IValidator<GetMotorbikesQuery>, GetMotorbikesQueryValidator>();

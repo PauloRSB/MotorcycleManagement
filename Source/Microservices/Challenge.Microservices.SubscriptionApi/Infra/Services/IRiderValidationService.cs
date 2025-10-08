@@ -1,4 +1,6 @@
-﻿namespace Challenge.Microservices.SubscriptionApi.Infra.Services
+﻿using Challenge.Microservices.SubscriptionApi.Infra.Services.Response;
+
+namespace Challenge.Microservices.SubscriptionApi.Infra.Services
 {
     /// <summary>
     /// Service for validating rider eligibility
@@ -10,6 +12,6 @@
         /// </summary>
         /// <param name="riderIdentifier">The unique identifier of the rider</param>
         /// <returns>True if the rider has category A license, false otherwise</returns>
-        Task<bool> HasCategoryALicenseAsync(string riderIdentifier);
+        Task<HasValidVicenseResponse> HasValidLicenseAsync(string riderIdentifier);
     }
 }

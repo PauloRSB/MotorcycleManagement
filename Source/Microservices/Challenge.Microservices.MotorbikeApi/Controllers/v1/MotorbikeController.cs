@@ -145,6 +145,7 @@ namespace Challenge.Microservices.MotorbikeApi.Controllers.v1
         /// </remarks>
         /// <param name="handler">The command handler</param>
         /// <param name="id">The motorbike identifier</param>
+        /// <param name="command">The update command with motorbike data</param>
         /// <returns>The updated motorbike data</returns>
         /// <response code="200">License plate updated successfully</response>
         /// <response code="400">Invalid license plate format</response>
@@ -158,9 +159,10 @@ namespace Challenge.Microservices.MotorbikeApi.Controllers.v1
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ConflictResponse))]
         public async Task<IActionResult> UpdateLicensePlate(
             [FromServices] ICommandHandler<UpdateMotorbikeLicensePlateCommand> handler,
-            [FromRoute] string id)
+            [FromRoute] string id,
+            [FromBody] UpdateMotorbikeLicensePlateCommand command)
         {
-            var command = new UpdateMotorbikeLicensePlateCommand { Identifier = id };
+            command.Identifier = id;
 
             var response = await handler.Handle(command);
             return HttpResponseFactory.From<Motorbike>(response);

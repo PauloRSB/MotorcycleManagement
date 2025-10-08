@@ -2,6 +2,7 @@ using Challenge.Common.Data.Mongo.Converters;
 using Challenge.Microservices.RiderApi.Configuration;
 using Challenge.Microservices.RiderApi.Configuration.Options;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using static System.Net.WebRequestMethods;
 
 namespace Challenge.Microservices.RiderApi
 {
@@ -12,12 +13,21 @@ namespace Challenge.Microservices.RiderApi
             var builder = WebApplication.CreateBuilder(args);
 
             // Configure Kestrel to support HTTP/1.1 and HTTP/2
-            builder.WebHost.ConfigureKestrel(options =>
+            // TODO(PROD): Move to HTTPS + HTTP/2 (ALPN) with a valid certificate (e.g., port 8443).
+            builder.WebHost.ConfigureKestrel(o =>
             {
-                options.ListenAnyIP(8080, listenOptions =>
-                {
-                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                });
+                // DEV: gRPC over HTTP / 2 without TLS(h2c)
+                o.ListenAnyIP(8080, lo => lo.Protocols = HttpProtocols.Http2);
+
+                // DEV: REST over HTTP/1.1
+                o.ListenAnyIP(8081, lo => lo.Protocols = HttpProtocols.Http1);
+
+                // TODO(PROD):
+                // o.ListenAnyIP(8443, lo =>
+                // {
+                //     lo.UseHttps("certs/rider-prod.pfx", "PASSWORD");     // real cert
+                //     lo.Protocols = HttpProtocols.Http2;                  // gRPC w/ TLS
+                // });
             });
 
             builder.Services

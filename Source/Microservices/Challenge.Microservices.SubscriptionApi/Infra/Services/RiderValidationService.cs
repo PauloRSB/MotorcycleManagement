@@ -1,4 +1,6 @@
-﻿using Challenge.Common.Messaging.Grpc;
+﻿using Challenge.Common.Core.Response.Models;
+using Challenge.Common.Messaging.Grpc;
+using Challenge.Microservices.SubscriptionApi.Infra.Services.Response;
 using Grpc.Core;
 
 namespace Challenge.Microservices.SubscriptionApi.Infra.Services
@@ -11,7 +13,7 @@ namespace Challenge.Microservices.SubscriptionApi.Infra.Services
         RiderService.RiderServiceClient grpcClient,
         ILogger<RiderValidationService> logger) : IRiderValidationService
     {
-        public async Task<bool> HasCategoryALicenseAsync(string riderIdentifier)
+        public async Task<HasValidVicenseResponse> HasValidLicenseAsync(string riderIdentifier)
         {
             try
             {
@@ -31,22 +33,38 @@ namespace Challenge.Microservices.SubscriptionApi.Infra.Services
                         riderIdentifier, response.Message);
                 }
 
-                return response.IsValid;
+                return new HasValidVicenseResponse
+                {
+                    IsValid = response.IsValid,
+                    Message = response.Message
+                };
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
             {
                 logger.LogWarning("Rider not found. RiderIdentifier: {RiderIdentifier}", riderIdentifier);
-                return false;
+                return new HasValidVicenseResponse
+                {
+                    IsValid = false,
+                    Message = $"Rider not found. RiderIdentifier: {riderIdentifier}",
+                };
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.DeadlineExceeded)
             {
                 logger.LogError("Timeout validating rider. RiderIdentifier: {RiderIdentifier}", riderIdentifier);
-                return false;
+                return new HasValidVicenseResponse
+                {
+                    IsValid = false,
+                    Message = $"Timeout validating rider. RiderIdentifier: {riderIdentifier}",
+                };
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error validating rider. RiderIdentifier: {RiderIdentifier}", riderIdentifier);
-                return false;
+                return new HasValidVicenseResponse
+                {
+                    IsValid = false,
+                    Message = $"Error validating rider. RiderIdentifier: {riderIdentifier}",
+                };
             }
         }
     }

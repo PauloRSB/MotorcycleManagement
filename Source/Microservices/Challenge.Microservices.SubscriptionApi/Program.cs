@@ -8,9 +8,12 @@ namespace Challenge.Microservices.SubscriptionApi
     {
         public static void Main(string[] args)
         {
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Configure Kestrel to support HTTP/1.1 and HTTP/2
+            // TODO(PROD): Use https://... without the h2c switch and validate certificates properly.
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.ListenAnyIP(8080, listenOptions =>
@@ -18,6 +21,7 @@ namespace Challenge.Microservices.SubscriptionApi
                     listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                 });
             });
+
 
             builder.Services
                 .SetupDatabase(builder.Configuration)

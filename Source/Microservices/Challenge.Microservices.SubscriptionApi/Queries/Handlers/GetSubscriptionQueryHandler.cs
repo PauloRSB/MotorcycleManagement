@@ -31,7 +31,7 @@ namespace Challenge.Microservices.SubscriptionApi.Queries.Handlers
                 return ResponseFactory.CreateBadRequestResponse(validationResult.ToErrorDictionary());
             }
 
-            var subscription = repository.GetByIdentifierAsync(query.Identifier!);
+            var subscription = await repository.GetByIdentifierAsync(query.Identifier!);
 
             if (subscription is null)
             {

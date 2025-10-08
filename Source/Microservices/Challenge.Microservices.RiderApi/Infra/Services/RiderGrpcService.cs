@@ -13,7 +13,7 @@ namespace Challenge.Microservices.RiderApi.Infra.Services
         IRiderRepository riderRepository,
         ILogger<RiderGrpcService> logger) : RiderService.RiderServiceBase
     {
-        private const string REQUIRED_CNH_TYPE = "AB";
+        private const string REQUIRED_CNH_TYPE = "A";
 
         /// <summary>
         /// Validates if rider has the required CNH type
@@ -38,7 +38,7 @@ namespace Challenge.Microservices.RiderApi.Infra.Services
                 // Check if CNH type matches
                 // A rider with "AB" can also rent (contains "A")
                 logger.LogInformation("cnh: {CNH}", rider.CnhType);
-                var hasRequiredType = REQUIRED_CNH_TYPE.Contains(rider.CnhType,
+                var hasRequiredType = rider.CnhType.Contains(REQUIRED_CNH_TYPE,
                     StringComparison.OrdinalIgnoreCase);
 
                 return new ValidateRiderResponse
