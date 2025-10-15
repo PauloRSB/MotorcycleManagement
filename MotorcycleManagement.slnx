@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MotorcycleManagement.Api/MotorcycleManagement.Api.csproj" />
+    <Project Path="src/MotorcycleManagement.Application/MotorcycleManagement.Application.csproj" />
+    <Project Path="src/MotorcycleManagement.Domain/MotorcycleManagement.Domain.csproj" />
+    <Project Path="src/MotorcycleManagement.Infrastructure/MotorcycleManagement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MotorcycleManagement.IntegrationTests/MotorcycleManagement.IntegrationTests.csproj" />
+    <Project Path="tests/MotorcycleManagement.UnitTests/MotorcycleManagement.UnitTests.csproj" />
+  </Folder>
+</Solution>
